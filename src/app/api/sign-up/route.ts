@@ -36,17 +36,22 @@ export async function POST(request: Request) {
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
-        return Response.json({
+        return Response.json(
+          {
             success: false,
             message: "User already exist with this email",
-        }, {status: 400} )
-      } else{
-        const hashedPassword = await bcrypt.hash(password, 10)
-        existingUserByEmail.password = hashedPassword,
-        existingUserByEmail.verifyCode = verifyCode,
-        existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
+          },
+          { status: 400 }
+        );
+      } else {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        (existingUserByEmail.password = hashedPassword),
+          (existingUserByEmail.verifyCode = verifyCode),
+          (existingUserByEmail.verifyCodeExpiry = new Date(
+            Date.now() + 3600000
+          ));
         // save user
-        await existingUserByEmail.save()
+        await existingUserByEmail.save();
       }
     } else {
       // Create new user
@@ -84,19 +89,18 @@ export async function POST(request: Request) {
     }
 
     return Response.json(
-        {
-          success: true,
-          message: "User registered successfully. Please verify your email",
-        },
-        { status: 201 }
-      );
-
+      {
+        success: true,
+        message: "User registered successfully. Please verify your email",
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Error registring user", error);
+    console.error("Error registering user", error);
     return Response.json(
       {
         success: false,
-        message: "Error registring user",
+        message: "Error registering user",
       },
       {
         status: 500,
