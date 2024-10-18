@@ -78,6 +78,8 @@ export async function POST(request: Request) {
       username
     );
 
+    console.log("emailResponse", emailResponse)
+
     if (!emailResponse.success) {
       return Response.json(
         {
