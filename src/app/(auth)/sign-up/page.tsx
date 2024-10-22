@@ -3,7 +3,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useDebounceValue } from "usehooks-ts";
+import { useDebounceCallback } from "usehooks-ts";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
@@ -23,13 +23,13 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { signUpSchema } from "@/schemas/signUpSchema";
 
-const SignIn = () => {
+const SignUp = () => {
   const [username, setUsername] = useState("");
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const debouncedUsername = useDebounceValue(username, 300);
+  const debouncedUsername = useDebounceCallback(setUsername, 300);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -45,15 +45,16 @@ const SignIn = () => {
 
   useEffect(() => {
     const checkUsernameUnique = async () => {
-      if (debouncedUsername) {
+      if (username) {
         setIsCheckingUsername(true);
         setUsernameMessage("");
 
         try {
           const response = await axios.get(
-            `/api/check-username-unique?username=${debouncedUsername}`
+            `/api/check-username-unique?username=${username}`
           );
-          setUsernameMessage(response.data.message);
+          let message = response.data.message
+          setUsernameMessage(message);
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>;
           setUsername(
@@ -65,12 +66,12 @@ const SignIn = () => {
       }
     };
     checkUsernameUnique();
-  }, [debouncedUsername]);
+  }, [username]);
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
     try {
-      const response = await axios.post<ApiResponse>("/api/sign-in", data);
+      const response = await axios.post<ApiResponse>("/api/sign-up", data);
       toast({
         title: "Success",
         description: response.data.message,
@@ -115,11 +116,20 @@ const SignIn = () => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          setUsername(e.target.value);
+                          debouncedUsername(e.target.value);
                         }}
                       />
                     </FormControl>
-
+                    {isCheckingUsername && <Loader2 className="animate-spin" />}
+                    <p
+                      className={`text-sm ${
+                        usernameMessage === "Username is unique"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {usernameMessage}
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,4 +194,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
