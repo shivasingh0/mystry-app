@@ -31,7 +31,7 @@ const VerifyAccount = () => {
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
-      const response = await axios.post(`/api/verify/${param.username}`, {
+      const response = await axios.post(`/api/verify-code`, {
         username: params.username,
         code: data.code,
       });
@@ -40,7 +40,7 @@ const VerifyAccount = () => {
         title: "Success",
         description: response.data.message,
       });
-      router.replace("sign-in");
+      router.replace("/sign-in");
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
