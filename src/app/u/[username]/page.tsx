@@ -76,12 +76,14 @@ const SendMessage = () => {
   const showMessageSuggestions = async () => {
     setIsLoading(true);
     try {
-      const {
-        data: { data },
-      } = await axios.post<ApiResponse>("/api/suggest-messages");
+      const {data} = await axios.post<ApiResponse>("/api/suggest-messages");
+
+      console.log("data", data);
 
       // Destructure the response for clarity
-      const { candidates } = data.response;
+      const candidates = data.data.response.candidates
+
+      console.log("candidates", candidates);
 
       // Check if candidates exist
       if (candidates.length > 0) {
@@ -91,7 +93,7 @@ const SendMessage = () => {
           .map((question: string) => question.trim())
           .filter(Boolean); // Filter out any empty strings
 
-        console.log("suggestions", suggestions);
+        // console.log("suggestions", suggestions);
         setRandomSuggestions(suggestions);
       } else {
         toast({
