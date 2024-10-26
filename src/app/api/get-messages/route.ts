@@ -13,9 +13,9 @@ import mongoose from "mongoose";
 export async function GET(request: Request) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-  const user: User = session?.user;
+  // const user: User = session?.user;
 
-  if (!session || !user) {
+  if (!session || !session.user || !session.user._id) {
     return Response.json(
       {
         success: false,
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const userId = new mongoose.Types.ObjectId(user._id);
+  const userId = new mongoose.Types.ObjectId(String(session.user._id));
 
   try {
     const userMessages = await UserModel.aggregate([
