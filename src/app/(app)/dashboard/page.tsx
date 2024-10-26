@@ -64,20 +64,16 @@ const Dashboard = () => {
 
       try {
         const response = await axios.get<ApiResponse>("/api/get-messages");
-        console.log(response);
+        console.log(response.data.message)
 
-        // Check if response.data.message is an array, otherwise set to an empty array
-        const messagesData = Array.isArray(response.data.message)
-          ? response.data.message
-          : [];
-        setMessages(messagesData);
+        setMessages(response.data.message);
 
-        if (refresh) {
-          toast({
-            title: "Refreshed Messages",
-            description: "Messages have been refreshed",
-          });
-        }
+        // if (refresh) {
+        //   toast({
+        //     title: "Refreshed Messages",
+        //     description: "Messages have been refreshed",
+        //   });
+        // }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
 
@@ -146,8 +142,7 @@ const Dashboard = () => {
   if (!session || !session.user) {
     return (
       <div className="text-center mt-5 flex items-center justify-center">
-        <p className="text-4xl">Please Login</p>
-        <LoaderPinwheel className="animate-spin ms-3" />
+        <p className="text-4xl">Please Login</p><LoaderPinwheel className="animate-spin ms-3" />
       </div>
     );
   }
@@ -203,7 +198,7 @@ const Dashboard = () => {
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
-          messages.map((message, index) => (
+          messages.map((message,index) => (
             <MessageCard
               key={message._id}
               message={message}
