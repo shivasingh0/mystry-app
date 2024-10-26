@@ -78,15 +78,15 @@ const SendMessage = () => {
     try {
       const {data} = await axios.post<ApiResponse>("/api/suggest-messages");
 
-      console.log("data", data);
+      // console.log("data", data);
 
       // Destructure the response for clarity
-      const candidates = data.data.response.candidates
+      const candidates = data?.data?.response?.candidates
 
       console.log("candidates", candidates);
 
       // Check if candidates exist
-      if (candidates.length > 0) {
+      if (candidates && candidates.length > 0) {
         const rawText = candidates[0].content.parts[0].text;
         const suggestions = rawText
           .split("||")
