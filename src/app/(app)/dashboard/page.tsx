@@ -68,12 +68,12 @@ const Dashboard = () => {
 
         setMessages(response.data.message as Message);
 
-        // if (refresh) {
-        //   toast({
-        //     title: "Refreshed Messages",
-        //     description: "Messages have been refreshed",
-        //   });
-        // }
+        if (refresh) {
+          toast({
+            title: "Refreshed Messages",
+            description: "Messages have been refreshed",
+          });
+        }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
 
