@@ -10,10 +10,8 @@ import UserModel, { Message, User } from "@/model/User";
 export async function POST(request: Request) {
   await dbConnect();
 
-  await request.json();
-  const { username, content } = await request.json();
-
   try {
+    const { username, content } = await request.json();
     const user = await UserModel.findOne({ username });
 
     if (!user) {

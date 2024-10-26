@@ -12,17 +12,17 @@ const Navbar = () => {
 
   return (
     <nav className="p-4 md:p-6 shadow-md">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+      <div className="container w-full mx-auto flex flex-col md:flex-row justify-between items-center">
         <a className="text-xl font-bold md:mb-0" href="#">
           Mystry message
         </a>
         {session ? (
-          <>
+          <div>
             <span className="mr-4">Welcome, {user.username || user.email}</span>
-            <Button className="w-full md:mx-auto" onClick={() => signOut()}>
+            <Button className="md:mx-auto" onClick={() => signOut()}>
               Logout
             </Button>
-          </>
+          </div>
         ) : (
           <Link href="/sign-in">
             <Button className="w-full md:mx-auto">Login</Button>

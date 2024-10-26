@@ -45,14 +45,30 @@ const MessageCard = ({message, onMessageDelete}: MessageCardProps) => {
         }
         
     }
+
+    const convertISOToNormalDate = (isoDate) => {
+      const date = new Date(isoDate);
+      // Specify the options for formatting
+      const options = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+      };
+      // Convert the date to a readable format
+      return date.toLocaleString(undefined, options);
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
+        <div className="flex justify-between items-center">
+        <CardTitle>{message.content}</CardTitle>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive">
-                <X className="w-5 h-5" />
+            <Button className="border hover:scale-105 transition-all bg-red-500 text-white font-bold border-red-500 rounded-md cursor-pointer px-4" variant="destructive">
+                <X />
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -69,14 +85,10 @@ const MessageCard = ({message, onMessageDelete}: MessageCardProps) => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
-        <CardDescription>Card Description</CardDescription>
+        </div>
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
       <CardFooter>
-        <p>Card Footer</p>
+        <p>{convertISOToNormalDate(message.createdAt)}</p>
       </CardFooter>
     </Card>
   );

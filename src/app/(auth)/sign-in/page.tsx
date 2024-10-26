@@ -15,22 +15,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeClosed, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { signInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
 
 const SignInPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   // zod implementation
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: "", 
+      identifier: "",
       password: "",
     },
   });
@@ -39,7 +43,7 @@ const SignInPage = () => {
     setIsSubmitting(true);
     const result = await signIn("credentials", {
       redirect: false,
-      identifier: data.identifier,
+      identifier: data.email,
       password: data.password,
     });
     setIsSubmitting(false);
@@ -79,12 +83,16 @@ const SignInPage = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="identifier"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email/Username</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email/username" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="email/username"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,13 +105,26 @@ const SignInPage = () => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
+                    <div className="relative">
                       <Input
                         placeholder="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         {...field}
                       />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                      >
+                        {showPassword ? <EyeOff /> : <Eye />}
+                      </button>
+                    </div>
                     </FormControl>
+                    
                     <FormMessage />
+                    
+                    {/* <Eye />
+                    <EyeOff /> */}
                   </FormItem>
                 )}
               />

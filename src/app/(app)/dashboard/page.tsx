@@ -9,7 +9,7 @@ import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { Ellipsis, Loader2, LoaderPinwheel, RefreshCcw } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -64,8 +64,9 @@ const Dashboard = () => {
 
       try {
         const response = await axios.get<ApiResponse>("/api/get-messages");
+        console.log(response)
 
-        setMessages(response.data.messages || []);
+        setMessages(response.data.message || []);
 
         if (refresh) {
           toast({
@@ -93,6 +94,7 @@ const Dashboard = () => {
     if (!session || !session.user) {
       return;
     }
+    // fetchMessages(true)
     fetchAcceptMessages();
   }, [session, setValue, fetchAcceptMessages, fetchMessages]);
 
@@ -121,7 +123,10 @@ const Dashboard = () => {
     }
   };
 
-  const { username } = session?.user as User;
+  // const { username } = session?.user as User;
+  const username = session?.user?.username;
+
+  // console.log(username)
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
   const profileUrl = `${baseUrl}/u/${username}`;
@@ -136,8 +141,8 @@ const Dashboard = () => {
 
   if (!session || !session.user) {
     return (
-      <div>
-        <p>Please Login</p>
+      <div className="text-center mt-5 flex items-center justify-center">
+        <p className="text-4xl">Please Login</p><LoaderPinwheel className="animate-spin ms-3" />
       </div>
     );
   }
