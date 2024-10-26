@@ -76,37 +76,37 @@ const SendMessage = () => {
   const showMessageSuggestions = async () => {
     setIsLoading(true);
     try {
-      const { data: { data } } = await axios.post<ApiResponse<string[]>>(
-        "/api/suggest-messages"
-      );
-  
+      const {
+        data: { data },
+      } = await axios.post<ApiResponse>("/api/suggest-messages");
+
       // Destructure the response for clarity
       const { candidates } = data.response;
-      
+
       // Check if candidates exist
       if (candidates.length > 0) {
         const rawText = candidates[0].content.parts[0].text;
         const suggestions = rawText
           .split("||")
-          .map((question) => question.trim())
+          .map((question: string) => question.trim())
           .filter(Boolean); // Filter out any empty strings
-  
+
         console.log("suggestions", suggestions);
         setRandomSuggestions(suggestions);
       } else {
         toast({
           title: "No Suggestions",
           description: "No message suggestions available.",
-          variant: "info",
         });
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-  
+
       // Enhanced error handling
-      const errorMessage = axiosError.response?.data.message || "Failed to suggest messages";
+      const errorMessage =
+        axiosError.response?.data.message || "Failed to suggest messages";
       console.error("Error fetching suggestions:", error); // Log the full error for debugging
-  
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -116,7 +116,7 @@ const SendMessage = () => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <>
       <div className="shadow-md h-24 w-full mx-auto text-center flex items-center justify-center">
