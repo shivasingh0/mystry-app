@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   const userId = new mongoose.Types.ObjectId(user._id);
 
   try {
-    const user = await UserModel.aggregate([
+    const userMessages = await UserModel.aggregate([
       // created a aggregation pipeline
       {
         $match: {
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         },
       },
     ]);
-    if (!user || user.length === 0) {
+    if (!userMessages  || userMessages .length === 0) {
       return Response.json(
         {
           success: false,
@@ -67,10 +67,12 @@ export async function GET(request: Request) {
       );
     }
 
+    console.log("User Messages:", JSON.stringify(userMessages[0].messages, null, 2)); 
+
     return Response.json(
       {
         success: true,
-        message: user[0].messages,
+        message: userMessages[0].messages,
       },
       {
         status: 200,

@@ -67,7 +67,11 @@ const Dashboard = () => {
         console.log(response.data.message)
 
 
-        setMessages(response.data.message as Message[]);
+        if (Array.isArray(response.data.message)) {
+          setMessages(response.data.message);
+        } else {
+          setMessages([]);
+        }
 
         if (refresh) {
           toast({
@@ -88,7 +92,7 @@ const Dashboard = () => {
         setIsSwitchLoading(false);
       }
     },
-    [setIsLoading, setMessages]
+    [setIsLoading, messages]
   );
 
   useEffect(() => {
