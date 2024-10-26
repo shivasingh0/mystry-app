@@ -26,7 +26,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 
 type MessageCardProps = {
   message: Message;
-  onMessageDelete: () => void;
+  onMessageDelete: (messageId: string) => void;
 }
 
 const MessageCard = ({message, onMessageDelete}: MessageCardProps) => {
