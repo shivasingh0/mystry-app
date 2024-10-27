@@ -13,24 +13,27 @@ import { Ellipsis, Loader2, LoaderPinwheel, RefreshCcw } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 
 const Dashboard = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string>("");
 
   const { toast } = useToast();
 
-  const handleDeleteMessage = (messageId: string)  => {
+  const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId));
   };
 
   const { data: session } = useSession();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof acceptMessageSchema>>({
     resolver: zodResolver(acceptMessageSchema),
   });
-
+  
   const { register, watch, setValue } = form;
 
   const acceptMessages = watch("acceptMessages");
@@ -41,7 +44,7 @@ const Dashboard = () => {
     try {
       const response = await axios.get<ApiResponse>("/api/accept-messages");
 
-      setValue("acceptMessages", response.data.isAcceptingMessages);
+      setValue("acceptMessages", response.data.isAcceptingMessages ?? false);
 
       setIsSwitchLoading(false);
     } catch (error) {
@@ -64,8 +67,7 @@ const Dashboard = () => {
 
       try {
         const response = await axios.get<ApiResponse>("/api/get-messages");
-        console.log(response.data.message)
-
+        console.log(response.data.message);
 
         if (Array.isArray(response.data.message)) {
           setMessages(response.data.message);
@@ -96,12 +98,10 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    if (!session || !session.user) {
-      return;
+    if (session && session.user) {
+      fetchAcceptMessages();
     }
-    // fetchMessages(true)
-    fetchAcceptMessages();
-  }, [session, setValue, fetchAcceptMessages, fetchMessages]);
+  }, [session, setValue, fetchAcceptMessages]);
 
   // handle switch change
   const handleSwitchChange = async () => {
@@ -131,12 +131,22 @@ const Dashboard = () => {
   // const { username } = session?.user as User;
   const username = session?.user?.username;
 
-  // console.log(username)
-
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
-  const profileUrl = `${baseUrl}/u/${username}`;
+  useEffect(() => {
+    if (typeof window !== "undefined" && username) {
+      const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      setProfileUrl(`${baseUrl}/u/${username}`);
+    }
+  }, [username]);
 
   const copyToClipboard = () => {
+    if (!profileUrl) {
+      toast({
+        title: "Error",
+        description: "Profile URL is not available",
+        variant: "destructive",
+      });
+      return;
+    }
     navigator.clipboard.writeText(profileUrl);
     toast({
       title: "URL copied",
@@ -147,7 +157,8 @@ const Dashboard = () => {
   if (!session || !session.user) {
     return (
       <div className="text-center mt-5 flex items-center justify-center">
-        <p className="text-4xl">Please Login</p><LoaderPinwheel className="animate-spin ms-3" />
+        <p className="text-4xl">Please Login</p>
+        <LoaderPinwheel className="animate-spin ms-3" />
       </div>
     );
   }
@@ -155,23 +166,25 @@ const Dashboard = () => {
   return (
     <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
       <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>
-        <div className="flex items-center">
-          <input
-            className="input input-bordered w-full py-2 px-4"
-            type="text"
-            value={profileUrl}
-            readOnly
-          />
-          <Button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
-            onClick={copyToClipboard}
-          >
-            Copy
-          </Button>
+      {profileUrl && (
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>
+          <div className="flex items-center">
+            <input
+              className="input input-bordered w-full py-2 px-4"
+              type="text"
+              value={profileUrl}
+              readOnly
+            />
+            <Button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
+              onClick={copyToClipboard}
+            >
+              Copy
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mb-4">
         <Switch
@@ -203,9 +216,9 @@ const Dashboard = () => {
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
-          messages.map((message,index) => (
+          messages.map((message) => (
             <MessageCard
-              key={index}
+              key={message._id}
               message={message}
               onMessageDelete={handleDeleteMessage}
             />
