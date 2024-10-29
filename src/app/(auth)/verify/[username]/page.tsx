@@ -1,6 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import {
   Form,
   FormControl,
   FormField,
@@ -8,18 +14,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { verifySchema } from "@/schemas/verifySchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const VerifyAccount = () => {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -30,6 +36,7 @@ const VerifyAccount = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
+    setLoading(true);
     try {
       const response = await axios.post(`/api/verify-code`, {
         username: params.username,
@@ -48,6 +55,8 @@ const VerifyAccount = () => {
         description: axiosError.response?.data.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,16 +78,31 @@ const VerifyAccount = () => {
                 <FormItem>
                   <FormLabel>Verification Code</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="code"
-                      {...field}
-                    />
+                    <InputOTP
+                      maxLength={6}
+                      value={field.value}
+                      onChange={field.onChange}
+                    >
+                      <InputOTPGroup>
+                        {[0, 1, 2].map((index) => (
+                          <InputOTPSlot key={index} index={index} />
+                        ))}
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        {[3, 4, 5].map((index) => (
+                          <InputOTPSlot key={index} index={index} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Verify</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Verifying..." : "Verify"}
+            </Button>
           </form>
         </Form>
       </div>
