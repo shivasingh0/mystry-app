@@ -1,71 +1,103 @@
-"use client";
-import React from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import messages from "@/messages.json";
-import Autoplay from "embla-carousel-autoplay";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MessageSquare, Lock, Zap, Users } from "lucide-react";
+import Link from "next/link";
 
-const Home = () => {
+export default function Component() {
   return (
-    <>
-      <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 py-12">
-        <section className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold">
-            Dive into the world of Anonymous Conversations
-          </h1>
-          <p className="mt-3 md:mt-4 text-base md:text-lg">
-            Explore mystry message - Where your identity remains a secret.
-          </p>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+          <div className="px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                  Honest Feedback, Anonymously Delivered
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Empower your team with the truth. Our platform ensures candid
+                  feedback while protecting individual privacy.
+                </p>
+              </div>
+              <div className="space-x-4">
+                <Link href="/sign-in">
+                  <Button className="w-full md:w-auto md:mx-auto">
+                    Get Started
+                  </Button>
+                </Link>
+                <Link href="/how_it_works">
+                  <Button variant="outline">Learn More</Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
-        <Carousel
-          plugins={[Autoplay({ delay: 2000 })]}
-          className="w-full max-w-xs"
+        <section
+          id="features"
+          className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800"
         >
-          <CarouselContent>
-            {messages.map((message, index) => (
-              <CarouselItem key={index}>
-                <div className="p-1">
-                  <Card>
-                    <CardHeader>{message.title}</CardHeader>
-                    <CardContent className="flex items-center">
-                      <span className="text-lg font-semibold">
-                        {message.content}
-                      </span>
-                    </CardContent>
-                    <CardFooter>{message.received}</CardFooter>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+          <div className="px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
+              Key Features
+            </h2>
+            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+              <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
+                <Lock className="h-8 w-8 mb-2" />
+                <h3 className="text-xl font-bold">100% Anonymous</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                  We ensure complete anonymity for all feedback providers.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
+                <Zap className="h-8 w-8 mb-2" />
+                <h3 className="text-xl font-bold">Instant Delivery</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                  Feedback is delivered instantly to the intended recipients.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
+                <Users className="h-8 w-8 mb-2" />
+                <h3 className="text-xl font-bold">Team Insights</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                  Gain valuable insights to improve team dynamics and
+                  performance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="cta" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Ready to improve your teams communication?
+                </h2>
+                <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Join thousands of teams already benefiting from honest,
+                  anonymous feedback.
+                </p>
+              </div>
+              <div className="w-full max-w-sm space-y-2">
+                <form className="flex space-x-2">
+                  <Input
+                    className="max-w-lg flex-1"
+                    placeholder="Enter your email"
+                    type="email"
+                  />
+                  <Button type="submit">Sign Up</Button>
+                </form>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  By signing up, you agree to our{" "}
+                  <Link className="underline underline-offset-2" href="#">
+                    Terms & Conditions
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer>
-        <p className="text-center text-sm mb-5">
-          © All right reversed {new Date().getFullYear()} -{" "}
-          <a
-            className="text-blue-600 hover:underline"
-            href="https://github.com/shivasingh0"
-          >
-            Shivmangal
-          </a>
-        </p>
-      </footer>
-    </>
+    </div>
   );
-};
-
-export default Home;
+}
