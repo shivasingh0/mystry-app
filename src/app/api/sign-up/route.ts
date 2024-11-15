@@ -15,6 +15,8 @@ export async function POST(request: Request) {
       isVerified: true,
     });
 
+    console.log("existingUserVerifiedByUsername",existingUserVerifiedByUsername)
+
     if (existingUserVerifiedByUsername) {
       return Response.json(
         {
@@ -32,10 +34,15 @@ export async function POST(request: Request) {
       email,
     });
 
+    console.log("existingUserByEmail",existingUserByEmail)
+
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("verifyCode",verifyCode)
 
     if (existingUserByEmail) {
+      console.log("existingUserByEmail",existingUserByEmail)
       if (existingUserByEmail.isVerified) {
+        console.log("User already exist with this email",existingUserByEmail.isVerified);
         return Response.json(
           {
             success: false,
@@ -56,7 +63,9 @@ export async function POST(request: Request) {
     } else {
       // Create new user
       const hashedPassword = await bcrypt.hash(password, 10);
+      console.log("hashedPassword",hashedPassword)
       const expiryDate = new Date();
+      console.log("expiryDate",expiryDate)
       expiryDate.setHours(expiryDate.getDate() + 1);
       const newUser = new UserModel({
         username,
@@ -68,9 +77,11 @@ export async function POST(request: Request) {
         isAcceptMessage: true,
         messages: [],
       });
+      console.log("newUser",newUser)
       await newUser.save(); // Save user to database
+      console.log("saving user...mail")
     }
-
+    console.log("sending...mail")
     // send verification email
     const emailResponse = await sendVerificationEmail(
       email,

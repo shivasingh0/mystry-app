@@ -51,6 +51,8 @@ export async function GET(request: Request) {
       isVerified: true,
     });
 
+    console.log("existingVerifiedUser",existingVerifiedUser)
+
     if (existingVerifiedUser) {
       return Response.json(
         {
